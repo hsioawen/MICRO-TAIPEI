@@ -1,0 +1,1865 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>微觀臺北：城市風波 | 線上試玩 DEMO</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&family=Noto+Sans+TC:wght@300;400;700;900&family=Oswald:wght@400;700&display=swap');
+
+  :root {
+    --ink: #0a0a0a;
+    --paper: #f4f0e8;
+    --smoke: #d8d4cc;
+    --ash: #8a8580;
+    --accent: #1a1a1a;
+    --highlight: #c8b84a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--ink);
+    color: var(--paper);
+    font-family: 'Noto Sans TC', sans-serif;
+    overflow-x: hidden;
+    cursor: crosshair;
+  }
+
+  /* ── NOISE OVERLAY ─────────────────────────────── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 9999;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    opacity: 0.35;
+  }
+
+  /* ── NAV ────────────────────────────────────────── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 48px;
+    border-bottom: 1px solid rgba(244,240,232,0.1);
+    background: rgba(10,10,10,0.92);
+    backdrop-filter: blur(12px);
+  }
+
+  .nav-logo {
+    font-family: 'Oswald', 'Noto Serif TC', serif;
+    font-size: 14px; letter-spacing: 0.3em;
+    color: var(--smoke);
+    text-transform: uppercase;
+  }
+
+  .nav-logo span { color: var(--highlight); }
+
+  .nav-links { display: flex; gap: 32px; }
+  .nav-links a {
+    font-size: 12px; letter-spacing: 0.2em;
+    color: var(--ash); text-decoration: none;
+    text-transform: uppercase;
+    transition: color 0.3s;
+  }
+  .nav-links a:hover { color: var(--paper); }
+
+  .nav-cta {
+    background: var(--paper);
+    color: var(--ink) !important;
+    padding: 8px 20px;
+    font-weight: 700 !important;
+    border: none !important;
+    transition: background 0.3s !important;
+  }
+  .nav-cta:hover { background: var(--highlight) !important; color: var(--ink) !important; }
+
+  /* ── HERO ──────────────────────────────────────── */
+  #hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+    padding: 100px 48px 80px;
+  }
+
+  .hero-grid-bg {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(244,240,232,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(244,240,232,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+
+  .hero-eyebrow {
+    font-family: 'Oswald', sans-serif;
+    font-size: 11px; letter-spacing: 0.5em;
+    color: var(--ash); text-transform: uppercase;
+    margin-bottom: 24px;
+    animation: fadeUp 0.8s ease both;
+  }
+
+  .hero-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: clamp(64px, 10vw, 120px);
+    font-weight: 900; line-height: 0.9;
+    text-align: center;
+    color: var(--paper);
+    animation: fadeUp 0.8s ease 0.1s both;
+  }
+
+  .hero-title .big { display: block; }
+  .hero-title .sub {
+    font-size: clamp(28px, 4vw, 48px);
+    color: var(--ash); font-weight: 400;
+    letter-spacing: 0.2em;
+  }
+
+  .hero-divider {
+    width: 120px; height: 3px;
+    background: var(--highlight);
+    margin: 32px auto;
+    animation: expandWidth 1s ease 0.3s both;
+  }
+
+  .hero-desc {
+    font-size: 16px; line-height: 1.8;
+    color: var(--smoke); text-align: center;
+    max-width: 560px;
+    animation: fadeUp 0.8s ease 0.4s both;
+  }
+
+  .hero-badges {
+    display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;
+    margin-top: 32px;
+    animation: fadeUp 0.8s ease 0.5s both;
+  }
+
+  .badge {
+    border: 1px solid rgba(244,240,232,0.2);
+    padding: 6px 16px;
+    font-size: 11px; letter-spacing: 0.2em;
+    color: var(--ash); text-transform: uppercase;
+  }
+
+  .hero-cta-group {
+    display: flex; gap: 16px; margin-top: 48px; flex-wrap: wrap; justify-content: center;
+    animation: fadeUp 0.8s ease 0.6s both;
+  }
+
+  .btn-primary {
+    background: var(--paper); color: var(--ink);
+    padding: 16px 40px; font-size: 13px;
+    letter-spacing: 0.2em; font-weight: 700;
+    text-transform: uppercase; text-decoration: none;
+    cursor: pointer; border: none;
+    transition: all 0.3s;
+    font-family: 'Noto Sans TC', sans-serif;
+  }
+  .btn-primary:hover { background: var(--highlight); transform: translateY(-2px); }
+
+  .btn-outline {
+    border: 1px solid rgba(244,240,232,0.4); color: var(--smoke);
+    padding: 16px 40px; font-size: 13px;
+    letter-spacing: 0.2em; font-weight: 400;
+    text-transform: uppercase; text-decoration: none;
+    cursor: pointer; background: transparent;
+    transition: all 0.3s;
+    font-family: 'Noto Sans TC', sans-serif;
+  }
+  .btn-outline:hover { border-color: var(--paper); color: var(--paper); transform: translateY(-2px); }
+
+  .hero-scroll {
+    position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    color: var(--ash); font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase;
+    animation: bounce 2s ease-in-out infinite;
+  }
+
+  .hero-scroll::after {
+    content: '↓';
+    font-size: 18px; color: var(--ash);
+  }
+
+  /* ── SECTION COMMON ────────────────────────────── */
+  section { padding: 100px 48px; }
+  .section-label {
+    font-family: 'Oswald', sans-serif;
+    font-size: 10px; letter-spacing: 0.5em;
+    color: var(--ash); text-transform: uppercase;
+    margin-bottom: 16px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .section-label::before {
+    content: '';
+    display: block; width: 32px; height: 1px;
+    background: var(--ash);
+  }
+
+  .section-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: clamp(32px, 5vw, 56px);
+    font-weight: 900; line-height: 1.1;
+    color: var(--paper);
+    margin-bottom: 16px;
+  }
+
+  /* ── MAP PREVIEW ─────────────────────────────── */
+  #map-section { background: #0a0a0a; overflow-x: hidden; }
+  .map-section-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 80px 48px 40px;
+  }
+
+  .map-intro {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 40px;
+    align-items: stretch;
+  }
+
+  .map-intro-scenes {
+    background: linear-gradient(160deg, rgba(200,184,74,0.07) 0%, rgba(0,0,0,0.4) 55%, #111 100%);
+    border: 1px solid rgba(244,240,232,0.1);
+    padding: 26px 22px 28px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%);
+  }
+  .map-intro-scenes::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 80px; height: 80px;
+    background: repeating-linear-gradient(-45deg, transparent, transparent 4px, rgba(200,184,74,0.06) 4px, rgba(200,184,74,0.06) 5px);
+    pointer-events: none;
+  }
+  .scenes-kicker {
+    font-family: 'Oswald', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.42em;
+    color: var(--highlight);
+    margin-bottom: 18px;
+    text-transform: uppercase;
+  }
+  .scenes-tag-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .scene-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 14px;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    color: var(--paper);
+    border: 1px solid rgba(244,240,232,0.14);
+    background: rgba(0,0,0,0.45);
+    transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+  }
+  .scene-chip:hover {
+    border-color: var(--highlight);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+  }
+  button.scene-chip {
+    font-family: inherit;
+    cursor: pointer;
+    text-align: left;
+  }
+  .scene-chip.is-active {
+    border-color: var(--highlight);
+    background: rgba(200,184,74,0.12);
+    box-shadow: 0 0 0 1px rgba(200,184,74,0.35);
+  }
+  .scene-chip-hint {
+    margin: 16px 0 10px;
+    padding: 14px 16px;
+    background: rgba(200,184,74,0.06);
+    border-left: 3px solid rgba(200,184,74,0.45);
+    font-size: 13px;
+    line-height: 1.75;
+    color: var(--smoke);
+  }
+  .scene-chip-hint.is-picked {
+    background: rgba(200,184,74,0.11);
+    border-left-color: var(--highlight);
+  }
+  .scene-chip-hint strong { color: var(--highlight); }
+  .scenes-deco {
+    flex: 1;
+    min-height: 72px;
+    margin: 8px 0 16px;
+    opacity: 0.85;
+  }
+  .scenes-foot {
+    font-size: 12px;
+    line-height: 1.75;
+    color: var(--ash);
+    padding-top: 16px;
+    border-top: 1px solid rgba(244,240,232,0.07);
+    margin-top: auto;
+  }
+
+  .map-stats {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 1px; background: rgba(244,240,232,0.1);
+    margin-top: 32px;
+  }
+
+  .stat-box {
+    background: #111;
+    padding: 24px;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+
+  .stat-num {
+    font-family: 'Oswald', sans-serif;
+    font-size: 40px; font-weight: 700;
+    color: var(--paper);
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 11px; letter-spacing: 0.2em;
+    color: var(--ash); text-transform: uppercase;
+  }
+
+  .map-viewer {
+    position: relative;
+    border: 1px solid rgba(244,240,232,0.1);
+    overflow: hidden; cursor: zoom-in;
+    max-width: 1200px; margin: 0 auto;
+  }
+
+  .map-viewer img {
+    width: 100%; display: block;
+    transition: transform 0.3s ease;
+    filter: contrast(1.1);
+  }
+
+  .map-viewer:hover img { transform: scale(1.05); }
+
+  .map-overlay {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, transparent 60%, rgba(0,0,0,0.7));
+    pointer-events: none;
+  }
+
+  .map-hint {
+    position: absolute; bottom: 20px; right: 20px;
+    font-size: 11px; letter-spacing: 0.2em;
+    color: var(--smoke); text-transform: uppercase;
+    background: rgba(0,0,0,0.7); padding: 8px 16px;
+    z-index: 30;
+  }
+
+  /* 互動地圖：拖曳、滾輪縮放、浮水印 */
+  .map-explorer {
+    position: relative;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    min-height: 560px;
+    background: #0d0d0d;
+    border: 1px solid rgba(244,240,232,0.1);
+  }
+  .map-explorer--cinema {
+    width: 100vw;
+    max-width: none;
+    margin-left: calc(50% - 50vw);
+    min-height: min(92vh, 960px);
+    border: none;
+    border-top: 1px solid rgba(200,184,74,0.15);
+    border-bottom: 1px solid rgba(244,240,232,0.08);
+    box-shadow: inset 0 0 120px rgba(0,0,0,0.5);
+  }
+  .map-explorer.map-explorer--demo { min-height: 380px; }
+  .map-explorer-viewport {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    cursor: grab;
+    touch-action: none;
+  }
+  .map-explorer-viewport.pan-locked { cursor: default; }
+  .map-explorer-viewport.is-dragging { cursor: grabbing; }
+  .map-explorer-stage {
+    position: absolute;
+    transform-origin: 0 0;
+    will-change: transform;
+  }
+  .map-explorer-stage > img {
+    display: block;
+    max-width: none;
+    height: auto;
+    user-select: none;
+    -webkit-user-drag: none;
+    pointer-events: none;
+    vertical-align: top;
+  }
+  .map-wm-pattern {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 4;
+    overflow: hidden;
+  }
+  .map-wm-pattern.wm-a { opacity: 0.38; }
+  .map-wm-pattern.wm-b {
+    opacity: 0.22;
+    transform: rotate(24deg) scale(1.15);
+    transform-origin: center;
+  }
+  .map-wm-pattern svg { width: 240%; height: 240%; margin: -45% -70%; }
+  .map-wm-big {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 5;
+    font-size: clamp(28px, 6vw, 72px);
+    font-weight: 900;
+    letter-spacing: 0.18em;
+    color: rgba(40,40,40,0.5);
+    text-shadow:
+      0 0 0 1px rgba(255,255,255,0.35),
+      0 2px 24px rgba(255,255,255,0.15);
+    transform: rotate(-14deg);
+    user-select: none;
+  }
+  .map-wm-big span { display: block; font-size: 0.35em; letter-spacing: 0.5em; margin-top: 0.35em; color: rgba(60,60,60,0.45); }
+  .map-explorer-hotspots {
+    position: absolute;
+    inset: 0;
+    z-index: 30;
+    pointer-events: none;
+  }
+  .map-explorer-hotspots .hotspot {
+    pointer-events: auto;
+    touch-action: manipulation;
+  }
+  .map-explorer-tools {
+    position: absolute;
+    bottom: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 25;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .map-explorer-tools button {
+    padding: 8px 14px;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    background: rgba(0,0,0,0.78);
+    border: 1px solid rgba(244,240,232,0.15);
+    color: var(--paper);
+    cursor: pointer;
+    font-family: 'Noto Sans TC', sans-serif;
+  }
+  .map-explorer-tools button:hover { border-color: var(--highlight); color: var(--highlight); }
+  .map-explorer-tools button[data-pan-toggle] {
+    border-color: rgba(200,184,74,0.45);
+    color: var(--highlight);
+  }
+  .map-story-rail {
+    position: absolute;
+    top: 48px;
+    left: 10px;
+    right: 10px;
+    z-index: 38;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    pointer-events: none;
+  }
+  .map-story-rail > * { pointer-events: auto; }
+  .map-story-rail .rail-title {
+    width: 100%;
+    text-align: center;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--highlight);
+    text-shadow: 0 1px 8px rgba(0,0,0,0.9);
+    margin-bottom: 2px;
+  }
+  .map-story-rail button {
+    padding: 10px 14px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    color: #1a1408;
+    background: linear-gradient(180deg, #f5e566, #d4bc3a);
+    border: 2px solid #4a3f12;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: 'Noto Sans TC', sans-serif;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+  }
+  .map-story-rail button:hover {
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+  }
+  .map-explorer-hinttop {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    right: 12px;
+    z-index: 25;
+    font-size: 11px;
+    line-height: 1.5;
+    color: var(--ash);
+    background: rgba(0,0,0,0.75);
+    padding: 10px 14px;
+    border: 1px solid rgba(244,240,232,0.08);
+  }
+  .map-explorer-hinttop strong { color: var(--highlight); }
+
+  .hotspot {
+    position: absolute;
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    min-height: 48px;
+    border: 3px solid #2a2210;
+    border-radius: 50%;
+    cursor: pointer;
+    animation: hotspotPulse 1.8s ease-in-out infinite;
+    transform: translate(-50%, -50%);
+    z-index: 32;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: rgba(200,184,74,0.4);
+    background: linear-gradient(145deg, #f0e060, var(--highlight) 45%, #a89430);
+    box-shadow:
+      0 0 0 5px rgba(200,184,74,0.45),
+      0 4px 18px rgba(0,0,0,0.5),
+      inset 0 1px 0 rgba(255,255,255,0.35);
+  }
+
+  .hotspot::before {
+    content: '';
+    position: absolute;
+    inset: 10px;
+    background: rgba(255,255,255,0.92);
+    border-radius: 50%;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.15);
+  }
+  @keyframes hotspotPulse {
+    0%, 100% { box-shadow: 0 0 0 5px rgba(200,184,74,0.45), 0 4px 18px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.35); }
+    50% { box-shadow: 0 0 0 10px rgba(200,184,74,0.2), 0 4px 22px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.35); }
+  }
+
+  .hotspot-tooltip {
+    position: absolute; bottom: 38px; left: 50%; transform: translateX(-50%);
+    background: var(--ink); border: 1px solid rgba(244,240,232,0.2);
+    padding: 8px 14px; font-size: 11px; letter-spacing: 0.1em;
+    color: var(--paper); white-space: nowrap;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.2s;
+  }
+
+  .hotspot:hover .hotspot-tooltip { opacity: 1; }
+
+  /* ── DEMO GAME ───────────────────────────────── */
+  .demo-wrapper {
+    position: relative;
+    border: 1px solid rgba(244,240,232,0.1);
+    overflow: hidden;
+  }
+
+  .demo-header {
+    background: linear-gradient(90deg, #151515 0%, #0f0f0f 100%);
+    padding: 20px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    border-bottom: 1px solid rgba(244,240,232,0.1);
+    position: relative;
+  }
+  .demo-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 32px;
+    width: 60px;
+    height: 2px;
+    background: var(--highlight);
+    opacity: 0.6;
+  }
+
+  .demo-case-id {
+    font-family: 'Oswald', sans-serif;
+    font-size: 11px; letter-spacing: 0.4em; color: var(--ash);
+    text-transform: uppercase;
+  }
+
+  .demo-progress-wrap { text-align: right; }
+  .demo-progress {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+  }
+  .progress-dot {
+    width: 26px;
+    height: 26px;
+    border: 1px solid rgba(244,240,232,0.25);
+    border-radius: 4px;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Oswald', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--ash);
+    background: rgba(0,0,0,0.4);
+  }
+  .progress-dot.active {
+    background: var(--highlight);
+    border-color: var(--highlight);
+    color: var(--ink);
+    box-shadow: 0 0 16px rgba(200,184,74,0.35);
+  }
+  .progress-dot.done { background: var(--paper); border-color: var(--paper); color: var(--ink); }
+  .progress-dot.future {
+    opacity: 0.42;
+    border-style: dashed;
+    font-size: 9px;
+  }
+  .progress-caption {
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    color: var(--ash);
+    margin-top: 8px;
+    max-width: 280px;
+    margin-left: auto;
+    line-height: 1.5;
+  }
+  .progress-caption strong { color: var(--highlight); }
+
+  .feedback-mail-cta {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(244,240,232,0.1);
+    font-size: 12px;
+    line-height: 1.6;
+  }
+  .feedback-mail-cta a {
+    color: var(--highlight);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .demo-mail-banner {
+    margin-top: 20px;
+    padding: 18px 20px;
+    background: linear-gradient(135deg, rgba(200,184,74,0.12) 0%, rgba(0,0,0,0.5) 100%);
+    border: 1px solid rgba(200,184,74,0.25);
+    text-align: center;
+  }
+  .demo-mail-banner p { font-size: 13px; color: var(--smoke); margin-bottom: 12px; line-height: 1.65; }
+  .demo-mail-banner a {
+    display: inline-block;
+    background: var(--highlight);
+    color: var(--ink);
+    padding: 12px 24px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-decoration: none;
+  }
+  .demo-mail-banner a:hover { filter: brightness(1.08); }
+
+  .demo-wrapper::before {
+    content: 'CASE FILE';
+    position: absolute;
+    top: 12px;
+    right: 20px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 9px;
+    letter-spacing: 0.35em;
+    color: rgba(200,184,74,0.25);
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .demo-body {
+    display: grid;
+    grid-template-columns: 1.45fr 0.55fr;
+    min-height: 620px;
+    align-items: stretch;
+  }
+
+  .demo-map-panel {
+    position: relative;
+    overflow: hidden;
+    border-right: 1px solid rgba(244,240,232,0.1);
+    min-height: 520px;
+  }
+
+  .demo-map-panel .map-explorer { min-height: 520px; }
+
+  .demo-clue-zone {
+    position: absolute;
+    border: 2px dashed rgba(200,184,74,0.6);
+    border-radius: 4px;
+    background: rgba(200,184,74,0.08);
+    transition: all 0.3s;
+    cursor: pointer;
+  }
+
+  .demo-clue-zone:hover {
+    border-color: var(--highlight);
+    background: rgba(200,184,74,0.18);
+  }
+
+  .demo-clue-zone .zone-label {
+    position: absolute; top: -22px; left: 0;
+    font-size: 9px; letter-spacing: 0.2em;
+    color: var(--highlight); text-transform: uppercase;
+    background: rgba(0,0,0,0.8); padding: 2px 6px;
+  }
+
+  .demo-card-panel {
+    padding: 40px;
+    display: flex; flex-direction: column; justify-content: space-between;
+    background: #0d0d0d;
+  }
+
+  .card-type {
+    font-family: 'Oswald', sans-serif;
+    font-size: 10px; letter-spacing: 0.5em;
+    color: var(--ash); text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .card-number {
+    font-family: 'Oswald', sans-serif;
+    font-size: 80px; font-weight: 700;
+    color: rgba(244,240,232,0.06);
+    line-height: 1; margin-bottom: -16px;
+  }
+
+  .card-question {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 22px; font-weight: 700;
+    color: var(--paper); line-height: 1.4;
+    margin-bottom: 16px;
+  }
+
+  .card-desc {
+    font-size: 13px; line-height: 1.8;
+    color: var(--smoke);
+    margin-bottom: 32px;
+  }
+
+  .answer-options { display: flex; flex-direction: column; gap: 10px; }
+
+  .answer-btn {
+    background: transparent;
+    border: 1px solid rgba(244,240,232,0.12);
+    padding: 14px 20px;
+    text-align: left; cursor: pointer;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 13px; color: var(--smoke);
+    transition: all 0.2s;
+    display: flex; align-items: center; gap: 12px;
+  }
+
+  .answer-btn:hover {
+    border-color: rgba(244,240,232,0.4);
+    color: var(--paper);
+    background: rgba(244,240,232,0.03);
+  }
+
+  .answer-btn.correct {
+    border-color: #4caf50;
+    background: rgba(76,175,80,0.1);
+    color: var(--paper);
+  }
+
+  .answer-btn.wrong {
+    border-color: #f44336;
+    background: rgba(244,67,54,0.1);
+    color: var(--ash);
+  }
+
+  .answer-btn .opt-tag {
+    font-family: 'Oswald', sans-serif;
+    font-size: 11px; color: var(--ash);
+    letter-spacing: 0.1em;
+    min-width: 20px;
+  }
+
+  .feedback-box {
+    display: none;
+    padding: 16px 20px;
+    border-left: 3px solid var(--highlight);
+    background: rgba(200,184,74,0.08);
+    font-size: 13px; line-height: 1.7;
+    color: var(--smoke);
+    margin-top: 16px;
+  }
+
+  .feedback-box.show { display: block; }
+
+  .next-clue-btn {
+    margin-top: 20px;
+    display: none;
+  }
+  .next-clue-btn.show { display: block; }
+
+  /* ── HOW IT WORKS ────────────────────────────── */
+  #how {
+    background: #111;
+    max-width: 100%;
+  }
+
+  .how-inner { max-width: 1200px; margin: 0 auto; }
+
+  .steps-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 1px; background: rgba(244,240,232,0.08);
+    margin-top: 60px;
+  }
+
+  .step-card {
+    background: #111;
+    padding: 48px 40px;
+    position: relative; overflow: hidden;
+    transition: background 0.3s;
+  }
+
+  .step-card:hover { background: #161616; }
+
+  .step-num {
+    font-family: 'Oswald', sans-serif;
+    font-size: 120px; font-weight: 700;
+    color: rgba(244,240,232,0.04);
+    position: absolute; top: -20px; right: 20px;
+    line-height: 1;
+  }
+
+  .step-icon {
+    font-size: 32px; margin-bottom: 20px;
+    display: block;
+  }
+
+  .step-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 20px; font-weight: 700;
+    color: var(--paper); margin-bottom: 12px;
+  }
+
+  .step-desc {
+    font-size: 14px; line-height: 1.8;
+    color: var(--ash);
+  }
+
+  /* ── STORIES ─────────────────────────────────── */
+  #stories { max-width: 1200px; margin: 0 auto; }
+
+  .stories-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr);
+    gap: 1px; background: rgba(244,240,232,0.08);
+    margin-top: 60px;
+  }
+
+  .story-card {
+    background: var(--ink);
+    padding: 40px;
+    position: relative; overflow: hidden;
+    cursor: pointer; transition: background 0.3s;
+  }
+
+  .story-card:hover { background: #0d0d0d; }
+
+  .story-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0;
+    width: 4px; height: 100%;
+    background: transparent;
+    transition: background 0.3s;
+  }
+
+  .story-card:hover::before { background: var(--highlight); }
+
+  .story-tag {
+    font-family: 'Oswald', sans-serif;
+    font-size: 10px; letter-spacing: 0.4em;
+    color: var(--ash); text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .story-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 24px; font-weight: 700;
+    color: var(--paper); margin-bottom: 12px;
+  }
+
+  .story-desc {
+    font-size: 14px; line-height: 1.8;
+    color: var(--ash); margin-bottom: 24px;
+  }
+
+  .story-tags {
+    display: flex; gap: 8px; flex-wrap: wrap;
+  }
+
+  .tag {
+    border: 1px solid rgba(244,240,232,0.12);
+    padding: 4px 12px; font-size: 11px;
+    color: var(--ash); letter-spacing: 0.1em;
+  }
+
+  /* ── CTA ─────────────────────────────────────── */
+  #cta {
+    background: var(--paper); color: var(--ink);
+    text-align: center; padding: 120px 48px;
+  }
+
+  #cta .section-label { color: var(--ash); justify-content: center; }
+  #cta .section-label::before { background: var(--ash); }
+
+  .cta-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: clamp(36px, 6vw, 64px);
+    font-weight: 900; line-height: 1.1;
+    color: var(--ink); margin-bottom: 24px;
+  }
+
+  .cta-desc {
+    font-size: 16px; line-height: 1.8;
+    color: #555; max-width: 560px; margin: 0 auto 48px;
+  }
+
+  .cta-mailto-box {
+    max-width: 520px;
+    margin: 0 auto 28px;
+    padding: 36px 28px;
+    border: 2px solid var(--ink);
+    background: linear-gradient(180deg, #faf9f6 0%, #f0ebe3 100%);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .cta-mailto-box::before {
+    content: '✉';
+    position: absolute;
+    top: -20px;
+    right: 16px;
+    font-size: 100px;
+    opacity: 0.06;
+    line-height: 1;
+  }
+  .cta-mailto-box .big-mail {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 16px 36px;
+    background: var(--ink);
+    color: var(--paper);
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .cta-mailto-box .big-mail:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.2);
+  }
+  .cta-mailto-box .sub-mail {
+    display: block;
+    margin-top: 16px;
+    font-size: 12px;
+    color: #666;
+    word-break: break-all;
+  }
+
+  .cta-links {
+    display: flex; gap: 32px; justify-content: center;
+    margin-top: 24px;
+  }
+
+  .cta-links a {
+    font-size: 13px; color: var(--ash);
+    text-decoration: none; letter-spacing: 0.1em;
+    border-bottom: 1px solid transparent;
+    transition: all 0.2s;
+  }
+
+  .cta-links a:hover { color: var(--ink); border-bottom-color: var(--ink); }
+
+  /* ── FOOTER ──────────────────────────────────── */
+  footer {
+    background: #050505;
+    padding: 32px 48px;
+    display: flex; justify-content: space-between; align-items: center;
+    border-top: 1px solid rgba(244,240,232,0.06);
+  }
+
+  .footer-brand {
+    font-family: 'Oswald', sans-serif;
+    font-size: 13px; letter-spacing: 0.3em;
+    color: var(--ash); text-transform: uppercase;
+  }
+
+  .footer-copy {
+    font-size: 11px; color: rgba(138,133,128,0.5);
+    letter-spacing: 0.1em;
+  }
+
+  /* ── MODAL ───────────────────────────────────── */
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(0,0,0,0.92);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.3s;
+    padding: 24px;
+  }
+
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+  .modal-box {
+    background: #111;
+    border: 1px solid rgba(244,240,232,0.15);
+    padding: 48px;
+    max-width: 520px; width: 100%;
+    position: relative;
+    transform: translateY(20px);
+    transition: transform 0.3s;
+  }
+
+  .modal-overlay.open .modal-box { transform: translateY(0); }
+
+  .modal-close {
+    position: absolute; top: 20px; right: 20px;
+    background: none; border: none; color: var(--ash);
+    font-size: 20px; cursor: pointer;
+    font-family: 'Oswald', sans-serif;
+    letter-spacing: 0;
+  }
+
+  .modal-close:hover { color: var(--paper); }
+
+  .modal-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 24px; font-weight: 700;
+    color: var(--paper); margin-bottom: 16px;
+  }
+
+  .modal-desc {
+    font-size: 14px; line-height: 1.8;
+    color: var(--ash); margin-bottom: 24px;
+  }
+
+  .modal-info {
+    background: rgba(200,184,74,0.1);
+    border-left: 3px solid var(--highlight);
+    padding: 16px 20px;
+    font-size: 13px; line-height: 1.7;
+    color: var(--smoke);
+  }
+
+  /* ── ANIMATIONS ──────────────────────────────── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes expandWidth {
+    from { width: 0; }
+    to { width: 120px; }
+  }
+
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(200,184,74,0.4); }
+    50% { box-shadow: 0 0 0 12px rgba(200,184,74,0); }
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(8px); }
+  }
+
+  .reveal {
+    opacity: 0; transform: translateY(32px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* ── RESPONSIVE ──────────────────────────────── */
+  @media (max-width: 768px) {
+    nav { padding: 14px 20px; }
+    .nav-links { display: none; }
+    section { padding: 60px 20px; }
+    .map-intro { grid-template-columns: 1fr; gap: 28px; }
+    .map-section-inner { padding: 60px 20px 32px; }
+    .demo-body { grid-template-columns: 1fr; min-height: auto; }
+    .demo-map-panel { min-height: 340px; border-right: none; border-bottom: 1px solid rgba(244,240,232,0.1); }
+    .demo-map-panel .map-explorer { min-height: 340px; }
+    .map-explorer--cinema { min-height: 72vh; }
+    .steps-grid { grid-template-columns: 1fr; }
+    .stories-grid { grid-template-columns: 1fr; }
+    footer { flex-direction: column; gap: 12px; text-align: center; }
+    .hero-title { font-size: 52px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">MICRO <span>台北</span> · 城市風波</div>
+  <div class="nav-links">
+    <a href="#map-section">地圖探索</a>
+    <a href="#demo">試玩</a>
+    <a href="#stories">故事</a>
+    <a href="#cta" class="nav-cta">合作洽詢</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-grid-bg"></div>
+  <p class="hero-eyebrow">一款教育 × 偵探 × 台灣文化桌遊</p>
+  <h1 class="hero-title">
+    <span class="big">微觀臺北</span>
+    <span class="sub">城市風波</span>
+  </h1>
+  <div class="hero-divider"></div>
+  <p class="hero-desc">在台北的街巷中，發生了一連串看似平凡卻暗藏秘密的事件。透過觀察、推理與連結線索，解開每個故事背後的真相。</p>
+  <div class="hero-badges">
+    <span class="badge">7–15 歲適用</span>
+    <span class="badge">2–6 人</span>
+    <span class="badge">A2 超大地圖</span>
+    <span class="badge">4 大城市事件</span>
+    <span class="badge">素養導向設計</span>
+  </div>
+  <div class="hero-cta-group">
+    <a href="#demo" class="btn-primary">立即試玩 →</a>
+    <a href="#cta" class="btn-outline">出版授權洽詢</a>
+  </div>
+  <div class="hero-scroll">向下滾動</div>
+</section>
+
+<!-- MAP SECTION -->
+<section id="map-section">
+  <div class="map-section-inner">
+    <div class="map-intro">
+      <div class="reveal">
+        <div class="section-label">核心道具</div>
+        <h2 class="section-title">一張地圖<br>藏著整座城市</h2>
+        <p style="font-size:15px;line-height:1.85;color:var(--ash);margin-bottom:24px;">A2 超大手繪黑白插畫地圖，以俯瞰視角呈現台北的捷運站、廟宇廣場、夜市、公園與社區街道。超過 300 個角色同時活動，每個細節都是解謎的線索。</p>
+        <div class="map-stats">
+          <div class="stat-box">
+            <span class="stat-num">300+</span>
+            <span class="stat-label">插畫角色</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-num">A2</span>
+            <span class="stat-label">地圖尺寸</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-num">4</span>
+            <span class="stat-label">城市事件</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-num">20+</span>
+            <span class="stat-label">線索卡片</span>
+          </div>
+        </div>
+      </div>
+      <div class="map-intro-scenes reveal">
+        <div class="scenes-kicker">Scenes on the map</div>
+        <div class="scenes-tag-cloud">
+          <button type="button" class="scene-chip" data-modal="mrt">🚇 捷運站月台</button>
+          <button type="button" class="scene-chip" data-modal="temple">🏛️ 廟宇廟埕</button>
+          <button type="button" class="scene-chip" data-modal="nightmarket">🌙 夜市小吃</button>
+          <button type="button" class="scene-chip" data-modal="tower101">🏙️ 101 社區</button>
+          <button type="button" class="scene-chip" data-modal="parkSchool">🏫 公園學校</button>
+        </div>
+        <div class="scenes-deco" aria-hidden="true">
+          <svg viewBox="0 0 320 64" width="100%" height="64" preserveAspectRatio="xMidYMid meet" style="display:block;">
+            <path d="M0 52 L40 28 L72 40 L110 18 L150 36 L190 12 L230 38 L270 22 L320 48" fill="none" stroke="rgba(200,184,74,0.35)" stroke-width="1.2"/>
+            <path d="M0 58 L320 58" stroke="rgba(244,240,232,0.08)" stroke-width="1"/>
+          </svg>
+        </div>
+        <div class="scene-chip-hint" id="sceneChipHint" role="status">點選上方場景標籤，會開啟故事介紹；與下方全螢幕地圖上的<strong>金色標記</strong>內容相同，可互相對照。</div>
+        <p class="scenes-foot">五大場域在圖中彼此相連，玩家像偵探般<strong style="color:var(--smoke);">放大、平移、比對</strong>——與實體攤開 A2 地圖的體驗一致。下方地圖預設<strong style="color:var(--highlight);">鎖定拖曳</strong>，避免觸控板誤滑；需要平移時再解鎖即可。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="map-explorer map-explorer--cinema reveal" id="mainMapExplorer" data-initial="cover" data-start-pan="locked">
+    <div class="map-explorer-hinttop"><strong>全螢幕地圖</strong>　預設<strong>鎖定拖曳</strong>防誤觸｜滾輪／按鈕縮放｜點「解鎖」後可平移｜圖上<strong>金黃閃爍圓點</strong>可點故事</div>
+    <div class="map-story-rail" aria-label="故事捷徑">
+      <span class="rail-title">點選故事（與圖上金點相同）</span>
+      <button type="button" onclick="openModal('mrt')">🚇 捷運</button>
+      <button type="button" onclick="openModal('temple')">廟宇</button>
+      <button type="button" onclick="openModal('nightmarket')">夜市</button>
+      <button type="button" onclick="openModal('police')">警察局</button>
+    </div>
+    <div class="map-explorer-viewport">
+      <div class="map-explorer-stage">
+        <img src="A2_海報.png" alt="微觀臺北遊戲地圖">
+        <div class="map-wm-pattern wm-a" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <pattern id="wmMainA" width="200" height="72" patternUnits="userSpaceOnUse" patternTransform="rotate(-28)">
+                <text x="0" y="22" fill="rgba(30,30,30,0.85)" font-size="11" font-weight="800" font-family="Noto Sans TC,sans-serif">微觀臺北 · DEMO 非賣品</text>
+                <text x="0" y="38" fill="rgba(50,50,50,0.7)" font-size="9" font-family="Noto Sans TC,sans-serif">城市風波 · 未經授權禁止轉載</text>
+                <text x="0" y="54" fill="rgba(60,60,60,0.55)" font-size="8" font-family="Noto Sans TC,sans-serif">caseyhuang.studio@gmail.com</text>
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#wmMainA)" />
+          </svg>
+        </div>
+        <div class="map-wm-pattern wm-b" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <pattern id="wmMainB" width="160" height="160" patternUnits="userSpaceOnUse">
+                <text x="10" y="80" fill="rgba(0,0,0,0.12)" font-size="52" font-weight="900" font-family='Noto Serif TC,serif' transform="rotate(-35 80 80)">微</text>
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#wmMainB)" />
+          </svg>
+        </div>
+        <div class="map-wm-big" aria-hidden="true">微觀臺北<span>DEMO · 試玩版</span></div>
+        <div class="map-explorer-hotspots">
+          <div class="hotspot" style="top:11%;left:9%;" role="button" tabindex="0" title="捷運月台區故事" onclick="event.stopPropagation();openModal('mrt');" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openModal('mrt');}"><div class="hotspot-tooltip">捷運月台區</div></div>
+          <div class="hotspot" style="top:9%;left:82%;" role="button" tabindex="0" title="廟口失竊錄" onclick="event.stopPropagation();openModal('temple');" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openModal('temple');}"><div class="hotspot-tooltip">〈廟口失竊錄〉</div></div>
+          <div class="hotspot" style="top:76%;left:72%;" role="button" tabindex="0" title="夜市驚魂錄" onclick="event.stopPropagation();openModal('nightmarket');" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openModal('nightmarket');}"><div class="hotspot-tooltip">〈夜市驚魂錄〉</div></div>
+          <div class="hotspot" style="top:46%;left:46%;" role="button" tabindex="0" title="警察局線索" onclick="event.stopPropagation();openModal('police');" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openModal('police');}"><div class="hotspot-tooltip">警察局線索點</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="map-explorer-tools">
+      <button type="button" data-pan-toggle>🔒 解鎖拖曳</button>
+      <button type="button" data-zoom="out">縮小 −</button>
+      <button type="button" data-zoom="in">放大 ＋</button>
+      <button type="button" data-zoom="reset">重置視角</button>
+    </div>
+    <div class="map-hint">鎖定時僅縮放｜解鎖後可拖曳｜金點或上方黃鈕皆可開故事</div>
+  </div>
+</section>
+
+<!-- DEMO GAME -->
+<section id="demo" style="background:linear-gradient(180deg,#0a0a0a 0%,#080808 40%,#0c0c0c 100%); padding:100px 32px 110px;">
+  <div style="max-width:1480px;margin:0 auto;">
+    <div class="section-label reveal">互動試玩</div>
+    <h2 class="section-title reveal">試解第一條線索</h2>
+    <p style="font-size:15px;line-height:1.85;color:var(--ash);max-width:620px;margin-bottom:20px;" class="reveal">體驗《廟口失竊錄》精選關卡。正式遊戲中<strong style="color:var(--highlight);">每起案件含 5 張線索卡</strong>（＋任務／解答）；以下為網頁節錄，讓你一窺推理節奏。</p>
+
+    <div class="demo-wrapper reveal">
+      <div class="demo-header">
+        <span class="demo-case-id">CASE #001 ·〈廟口失竊錄〉</span>
+        <div class="demo-progress-wrap">
+          <div class="demo-progress">
+            <div class="progress-dot active" id="dot1"><span>1</span></div>
+            <div class="progress-dot" id="dot2"><span>2</span></div>
+            <div class="progress-dot" id="dot3"><span>3</span></div>
+            <div class="progress-dot future" id="dot4" title="完整版專屬"><span>4</span></div>
+            <div class="progress-dot future" id="dot5" title="完整版專屬"><span>5</span></div>
+          </div>
+          <p class="progress-caption">數字代表<strong>線索卡順序</strong> · ④⑤ 與後續推理僅收錄於實體遊戲</p>
+        </div>
+      </div>
+
+      <div class="demo-body">
+        <!-- MAP PANEL -->
+        <div class="demo-map-panel" id="demoMapPanel">
+          <div class="map-explorer map-explorer--demo" id="demoMapExplorer" data-initial="temple">
+            <div class="map-explorer-hinttop" style="font-size:10px;padding:8px 10px;"><strong>試玩區地圖</strong>　可拖曳／縮放對照廟宇周邊細節</div>
+            <div class="map-explorer-viewport">
+              <div class="map-explorer-stage">
+                <img src="A2_海報.png" alt="地圖">
+                <div class="map-wm-pattern wm-a" aria-hidden="true">
+                  <svg xmlns="http://www.w3.org/2000/svg"><defs><pattern id="wmDemoA" width="180" height="64" patternUnits="userSpaceOnUse" patternTransform="rotate(-26)"><text x="0" y="20" fill="rgba(35,35,35,0.8)" font-size="10" font-weight="800" font-family="Noto Sans TC,sans-serif">微觀臺北 DEMO</text><text x="0" y="36" fill="rgba(50,50,50,0.55)" font-size="8" font-family="Noto Sans TC,sans-serif">非賣品 · 禁止轉載</text></pattern></defs><rect width="100%" height="100%" fill="url(#wmDemoA)" /></svg>
+                </div>
+                <div class="map-wm-big" style="font-size:clamp(18px,3vw,32px);" aria-hidden="true">試玩<span style="font-size:0.4em;letter-spacing:0.4em;">DEMO</span></div>
+              </div>
+            </div>
+            <div class="map-explorer-tools">
+              <button type="button" data-zoom="out">−</button>
+              <button type="button" data-zoom="in">＋</button>
+              <button type="button" data-zoom="reset">重置</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD PANEL -->
+        <div class="demo-card-panel" id="cardPanel">
+          <!-- Clue 1 -->
+          <div id="clue1">
+            <div class="card-type">線索卡 / Clue Card</div>
+            <div class="card-number">01</div>
+            <div class="card-question">廟宇失竊了什麼？</div>
+            <div class="card-desc">清晨，廟祝發現供桌上少了什麼珍貴之物。現場留下了空空的底座，還有未燃盡的香灰。你能在地圖中找到廟宇，看出公告上寫了什麼嗎？</div>
+            <div class="answer-options">
+              <button class="answer-btn" onclick="checkAnswer(this, false, '再找找看！公告上的圖示指向的是更具宗教象徵意義的物品。')">
+                <span class="opt-tag">A</span>香爐與蠟燭
+              </button>
+              <button class="answer-btn" onclick="checkAnswer(this, true, '答對了！地圖廟宇區域的「尋找佛像」公告清楚顯示，被盜的正是供桌上的佛像。接下來要找：是誰偷走了它？')">
+                <span class="opt-tag">B</span>供桌上的佛像
+              </button>
+              <button class="answer-btn" onclick="checkAnswer(this, false, '再找找看！廟宇公告欄上有更明確的線索，仔細看看那張貼出來的圖片。')">
+                <span class="opt-tag">C</span>功德箱裡的捐款
+              </button>
+              <button class="answer-btn" onclick="checkAnswer(this, false, '再找找看！那是廟宇的裝飾物，並非失竊的主角。')">
+                <span class="opt-tag">D</span>廟門的銅鑼
+              </button>
+            </div>
+            <div class="feedback-box" id="feedback1"></div>
+            <div class="next-clue-btn" id="nextBtn1">
+              <button class="btn-primary" onclick="nextClue(2)" style="width:100%;text-align:center;">下一條線索 →</button>
+            </div>
+          </div>
+
+          <!-- Clue 2 -->
+          <div id="clue2" style="display:none;">
+            <div class="card-type">線索卡 / Clue Card</div>
+            <div class="card-number">02</div>
+            <div class="card-question">誰偷走了佛像？</div>
+            <div class="card-desc">案發當晚，廟宇周圍有幾個人的蹤跡。仔細觀察地圖中廟宇角落——誰的動作看起來最可疑？注意那個背著袋子、鬼鬼祟祟的身影。</div>
+            <div class="answer-options">
+              <button class="answer-btn" onclick="checkAnswer2(this, false, '這位老翁是廟裡的常客，並非可疑人物。')">
+                <span class="opt-tag">A</span>燒香的老翁
+              </button>
+              <button class="answer-btn" onclick="checkAnswer2(this, false, '小女孩只是在廟口玩耍，她的雙手是空的。')">
+                <span class="opt-tag">B</span>廟口的小女孩
+              </button>
+              <button class="answer-btn" onclick="checkAnswer2(this, true, '答對了！地圖中一名男孩正在廟宇角落行動，背著鼓鼓的布袋，這正是跟師傅學習雕刻的學徒！')">
+                <span class="opt-tag">C</span>背袋子的男孩學徒
+              </button>
+              <button class="answer-btn" onclick="checkAnswer2(this, false, '外來攤販忙著做生意，沒有機會進入廟宇內部。')">
+                <span class="opt-tag">D</span>廟外的外來攤販
+              </button>
+            </div>
+            <div class="feedback-box" id="feedback2"></div>
+            <div class="next-clue-btn" id="nextBtn2">
+              <button class="btn-primary" onclick="nextClue(3)" style="width:100%;text-align:center;">繼續解謎 →</button>
+            </div>
+          </div>
+
+          <!-- Clue 3 - Ending -->
+          <div id="clue3" style="display:none;">
+            <div class="card-type">🎉 故事揭曉</div>
+            <div class="card-number" style="color:rgba(200,184,74,0.15);">✓</div>
+            <div class="card-question" style="color:var(--highlight);">真相浮出水面</div>
+            <div class="card-desc" style="border-left:3px solid var(--highlight);padding-left:16px;">
+              一名在廟口學習雕刻的小男孩，長年跟在師傅身旁，看著那些虔誠的信徒捧香膜拜。直到某天他聽見商人低語：「這尊佛像值不少錢。」貪念悄悄萌生。<br><br>師傅依照線索找到徒弟，輕輕說：「比佛像更重要的，是你心裡的那個缺口。」
+            </div>
+            <div style="background:rgba(200,184,74,0.08);border:1px solid rgba(200,184,74,0.2);padding:20px;margin-bottom:20px;">
+              <p style="font-size:12px;letter-spacing:0.2em;color:var(--ash);text-transform:uppercase;margin-bottom:8px;">反思討論題</p>
+              <p style="font-size:13px;line-height:1.7;color:var(--smoke);">貪念的起點，往往只是一個念頭。如果你是那位師傅，你會選擇原諒徒弟嗎？</p>
+            </div>
+            <p style="font-size:11px;color:var(--ash);line-height:1.65;margin-bottom:16px;">完整版本作尚有<strong style="color:var(--highlight);">第 4、5 張線索卡</strong>與解答卡，推理層次更完整。</p>
+            <div class="demo-mail-banner">
+              <p>想收藏實體遊戲、或洽談出版／授權？<br>歡迎直接寄信，我會親自回覆。</p>
+              <a id="demoEndMailto" href="#">✉ 寄信給創作者</a>
+            </div>
+            <button class="btn-primary" onclick="resetDemo()" style="width:100%;text-align:center;display:block;margin-top:20px;">重新挑戰 ↺</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how">
+  <div class="how-inner">
+    <div class="section-label reveal">遊戲流程</div>
+    <h2 class="section-title reveal">三步解開城市謎案</h2>
+    <div class="steps-grid">
+      <div class="step-card reveal">
+        <span class="step-num">01</span>
+        <span class="step-icon">📋</span>
+        <div class="step-title">閱讀任務卡</div>
+        <p class="step-desc">每場遊戲以一張任務卡開始，了解事件概要與調查方向。台北城市裡某處正在發生不尋常的事……</p>
+      </div>
+      <div class="step-card reveal" style="transition-delay:0.1s">
+        <span class="step-num">02</span>
+        <span class="step-icon">🔍</span>
+        <div class="step-title">依序翻閱線索卡</div>
+        <p class="step-desc">每張線索卡提出一個問題，在 A2 地圖中尋找對應的角色、動作或地點。找到答案後再翻下一張線索卡。</p>
+      </div>
+      <div class="step-card reveal" style="transition-delay:0.2s">
+        <span class="step-num">03</span>
+        <span class="step-icon">💡</span>
+        <div class="step-title">揭曉真相</div>
+        <p class="step-desc">找齊所有線索後，翻閱解答卡，完整故事與社會議題反思題就此揭曉。不只是找一找，更是一次思辨。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STORIES -->
+<section id="stories">
+  <div class="section-label reveal">第一版故事模組</div>
+  <h2 class="section-title reveal">四大城市事件</h2>
+  <p style="font-size:15px;line-height:1.8;color:var(--ash);max-width:560px;margin-bottom:0;" class="reveal">每則故事獨立完整，涵蓋台灣社會議題。可單獨遊玩，亦可全套闖關。</p>
+
+  <div class="stories-grid">
+    <div class="story-card reveal" onclick="openModal('temple')">
+      <div class="story-tag">事件 01 · 廟宇</div>
+      <div class="story-title">〈廟口失竊錄〉</div>
+      <div class="story-desc">黎明前的廟口，香爐裡的灰仍溫熱。昨日消失的，不只是供桌上的佛像，還有一個學徒的信任……</div>
+      <div class="story-tags">
+        <span class="tag">誠信</span>
+        <span class="tag">師徒倫理</span>
+        <span class="tag">台灣廟宇文化</span>
+      </div>
+    </div>
+    <div class="story-card reveal" style="transition-delay:0.1s" onclick="openModal('election')">
+      <div class="story-tag">事件 02 · 高樓</div>
+      <div class="story-title">〈謎樣的集會〉</div>
+      <div class="story-desc">夜幕下的高樓裡，傳出的並不是祈禱聲，而是交錯的交易。那場「祈福聚會」，只是掩飾金錢流動的假象……</div>
+      <div class="story-tags">
+        <span class="tag">政教分離</span>
+        <span class="tag">公民監督</span>
+        <span class="tag">政治獻金</span>
+      </div>
+    </div>
+    <div class="story-card reveal" style="transition-delay:0.2s" onclick="openModal('nightmarket')">
+      <div class="story-tag">事件 03 · 夜市</div>
+      <div class="story-title">〈夜市驚魂錄〉</div>
+      <div class="story-desc">夜市裡燈火通明，攤販吆喝聲此起彼落。就在眾人邊吃邊笑之際，一名顧客忽然倒地……</div>
+      <div class="story-tags">
+        <span class="tag">食品安全</span>
+        <span class="tag">商業倫理</span>
+        <span class="tag">台灣夜市文化</span>
+      </div>
+    </div>
+    <div class="story-card reveal" style="transition-delay:0.3s" onclick="openModal('election2')">
+      <div class="story-tag">事件 04 · 選舉</div>
+      <div class="story-title">〈選舉之夜的黑箱〉</div>
+      <div class="story-desc">夜幕低垂，廟口的燈籠還亮著。選舉的喧囂剛結束，然而一通匿名電話揭開了勝利背後的秘密……</div>
+      <div class="story-tags">
+        <span class="tag">民主選舉</span>
+        <span class="tag">公民勇氣</span>
+        <span class="tag">選舉文化</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta">
+  <div class="section-label">合作洽詢</div>
+  <h2 class="cta-title">一起讓台灣故事<br>走進每個孩子的童年</h2>
+  <p class="cta-desc">《微觀臺北：城市風波》開放版權授權與出版合作洽談。點下方按鈕會開啟你慣用的信箱 App，主旨與內文已預填——補上稱呼與需求即可送出。</p>
+  <div class="cta-mailto-box">
+    <p style="font-size:14px;color:#444;line-height:1.75;margin-bottom:8px;">來信請寄（已預填《微觀臺北》桌遊洽詢範本）</p>
+    <a class="big-mail" id="ctaMailtoMain" href="#">開啟 Email 撰寫</a>
+    <span class="sub-mail">caseyhuang.studio@gmail.com</span>
+  </div>
+  <div class="cta-links">
+    <a href="#" onclick="openModal('proposal')">📄 索取商業提案書</a>
+    <a href="#demo">🎮 重新試玩 DEMO</a>
+    <a href="#map-section">🗺️ 查看完整地圖</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">MICRO <span style="color:var(--highlight)">TAIPEI</span> · 微觀臺北</div>
+  <div class="footer-copy">© 2025 微觀臺北：城市風波 · 版權所有 · 本網站為遊戲試玩 DEMO，不代表最終發行版本</div>
+</footer>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal-box" id="modalBox">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<script>
+  // ── INTERSECTION OBSERVER ───────────────────────
+  const revealEls = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); }
+    });
+  }, { threshold: 0.1 });
+  revealEls.forEach(el => io.observe(el));
+
+  function mailtoMicroTaipei(extraLine) {
+    const subj = encodeURIComponent('【微觀臺北：城市風波】桌遊洽詢／合作');
+    const body = encodeURIComponent(
+      '您好，\n\n我透過《微觀臺北：城市風波》試玩網站與您聯絡，想了解桌遊完整內容、購藏、試玩或出版／授權合作等資訊。\n\n' +
+      (extraLine ? extraLine + '\n' : '') +
+      '（請繼續寫下您的稱呼、單位與需求）\n\n此致\n'
+    );
+    return 'mailto:caseyhuang.studio@gmail.com?subject=' + subj + '&body=' + body;
+  }
+  document.getElementById('ctaMailtoMain').href = mailtoMicroTaipei();
+  const demM = document.getElementById('demoEndMailto');
+  if (demM) demM.href = mailtoMicroTaipei('我剛完成網頁試玩，想進一步了解實體遊戲與五張線索卡的完整體驗。');
+
+  function feedbackHtml(msg, showMailCta, ctaWrong) {
+    const esc = (s) => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    let h = esc(msg);
+    if (showMailCta) {
+      h += '<p class="feedback-mail-cta"><a href="' + mailtoMicroTaipei(ctaWrong ? '試玩中有些疑問想請教…' : '想瞭解完整遊戲與合作方式。') + '">' +
+        (ctaWrong ? '▸ 想更瞭解作品？點此寄信聊聊' : '▸ 想玩更多完整內容？點此寄信與我聯絡') + '</a></p>';
+    }
+    return h;
+  }
+
+  function checkAnswer(btn, isCorrect, msg) {
+    const btns = btn.closest('.answer-options').querySelectorAll('.answer-btn');
+    btns.forEach(b => b.disabled = true);
+    const feedback = document.getElementById('feedback1');
+    if (isCorrect) {
+      btn.classList.add('correct');
+      feedback.style.borderLeftColor = '#4caf50';
+      feedback.style.background = 'rgba(76,175,80,0.08)';
+      document.getElementById('nextBtn1').classList.add('show');
+      document.getElementById('dot1').classList.remove('active');
+      document.getElementById('dot1').classList.add('done');
+      document.getElementById('dot2').classList.add('active');
+    } else {
+      btn.classList.add('wrong');
+      feedback.style.borderLeftColor = '#f44336';
+      feedback.style.background = 'rgba(244,67,54,0.08)';
+      setTimeout(() => {
+        btn.disabled = false;
+        btn.classList.remove('wrong');
+        feedback.classList.remove('show');
+        feedback.innerHTML = '';
+        btns.forEach(b => b.disabled = false);
+      }, 2200);
+    }
+    feedback.innerHTML = feedbackHtml(msg, true, !isCorrect);
+    feedback.classList.add('show');
+  }
+
+  function checkAnswer2(btn, isCorrect, msg) {
+    const btns = btn.closest('.answer-options').querySelectorAll('.answer-btn');
+    btns.forEach(b => b.disabled = true);
+    const feedback = document.getElementById('feedback2');
+    if (isCorrect) {
+      btn.classList.add('correct');
+      feedback.style.borderLeftColor = '#4caf50';
+      feedback.style.background = 'rgba(76,175,80,0.08)';
+      document.getElementById('nextBtn2').classList.add('show');
+      document.getElementById('dot2').classList.remove('active');
+      document.getElementById('dot2').classList.add('done');
+      document.getElementById('dot3').classList.add('active');
+    } else {
+      btn.classList.add('wrong');
+      feedback.style.borderLeftColor = '#f44336';
+      setTimeout(() => {
+        btn.disabled = false;
+        btn.classList.remove('wrong');
+        feedback.classList.remove('show');
+        feedback.innerHTML = '';
+        btns.forEach(b => b.disabled = false);
+      }, 2200);
+    }
+    feedback.innerHTML = feedbackHtml(msg, true, !isCorrect);
+    feedback.classList.add('show');
+  }
+
+  function nextClue(num) {
+    document.getElementById('clue' + (num-1)).style.display = 'none';
+    document.getElementById('clue' + num).style.display = 'block';
+    if (num === 3) {
+      document.getElementById('dot3').classList.remove('active');
+      document.getElementById('dot3').classList.add('done');
+      document.getElementById('dot1').classList.add('done');
+      document.getElementById('dot2').classList.add('done');
+    }
+  }
+
+  function resetDemo() {
+    document.getElementById('clue3').style.display = 'none';
+    document.getElementById('clue2').style.display = 'none';
+    document.getElementById('clue1').style.display = 'block';
+    for (let i = 1; i <= 5; i++) {
+      const d = document.getElementById('dot' + i);
+      d.classList.remove('done', 'active');
+      if (i >= 4) { d.classList.add('future'); } else { d.classList.remove('future'); }
+    }
+    document.getElementById('dot1').classList.add('active');
+    const btns1 = document.querySelectorAll('#clue1 .answer-btn');
+    btns1.forEach(b => { b.disabled = false; b.classList.remove('correct','wrong'); });
+    const btns2 = document.querySelectorAll('#clue2 .answer-btn');
+    btns2.forEach(b => { b.disabled = false; b.classList.remove('correct','wrong'); });
+    document.getElementById('feedback1').classList.remove('show');
+    document.getElementById('feedback1').innerHTML = '';
+    document.getElementById('feedback2').classList.remove('show');
+    document.getElementById('feedback2').innerHTML = '';
+    document.getElementById('nextBtn1').classList.remove('show');
+    document.getElementById('nextBtn2').classList.remove('show');
+  }
+
+  // ── MODALS ──────────────────────────────────────
+  const modalData = {
+    temple: {
+      title: '〈廟口失竊錄〉',
+      desc: '黎明前的廟口，香爐裡的灰仍溫熱。昨日消失的，不只是供桌上的佛像，還有一個學徒的信任。這名在廟口學習雕刻的小男孩，貪念悄悄萌生……',
+      info: '教育主題：誠信、貪念、師徒倫理 · 難度：⭐⭐ · 建議年齡：9 歲以上'
+    },
+    nightmarket: {
+      title: '〈夜市驚魂錄〉',
+      desc: '夜市裡燈火通明，攤販吆喝聲此起彼落。就在眾人邊吃邊笑之際，一名顧客忽然倒地，現場陷入混亂。化驗結果顯示，飲品中含有不明化學成分……',
+      info: '教育主題：食品安全、商業倫理 · 難度：⭐⭐⭐ · 建議年齡：10 歲以上'
+    },
+    mrt: {
+      title: '捷運月台區域',
+      desc: '台北捷運是台灣最具代表性的現代城市基礎設施。地圖中的捷運站月台場景忠實呈現了台北的通勤文化，也是多個故事線的交會點。',
+      info: '此區域關聯到多個故事的線索，細心觀察通勤人潮中的異常行為。'
+    },
+    election: {
+      title: '〈謎樣的集會〉',
+      desc: '夜幕下的高樓裡，傳出的並不是祈禱聲，而是交錯的交易。教宗名義上籌募善款，實際卻暗中收受候選人贈與的公事包，換取宗教團體在選舉中的支持……',
+      info: '教育主題：政教分離、公民監督 · 難度：⭐⭐⭐⭐ · 建議年齡：12 歲以上'
+    },
+    election2: {
+      title: '〈選舉之夜的黑箱〉',
+      desc: '選舉的喧囂剛結束，一通匿名檢舉電話揭開了勝利背後的秘密。在投票日前夕，候選人與里長在咖啡廳密會，交換了一只公事包。市場裡的地方媽媽們收到了紅包袋……',
+      info: '教育主題：民主選舉、公民勇氣 · 難度：⭐⭐⭐⭐ · 建議年齡：12 歲以上'
+    },
+    police: {
+      title: '警察局線索點',
+      desc: '地圖中的警察局是多則故事的最終解決場所。注意觀察誰在警察局附近徘徊，或是誰試圖迴避這個區域。',
+      info: '提示：解答卡中關於「最後誰被逮捕」的線索，最終都指向這個地點。'
+    },
+    tower101: {
+      title: '101 與天際線一幕',
+      desc: '地圖左下方矗立著地標高樓與「展覽館」週邊——象徵台北從傳統街巷伸向往國際的軸線。故事裡與高樓、集會、金流相關的場景，常與這類都市空間形成對照。',
+      info: '建議：解鎖地圖拖曳後，將畫面移動至左下高塔一帶並放大，觀察建築與路人細節。'
+    },
+    parkSchool: {
+      title: '公園、學校與社區角落',
+      desc: '大樹下乘涼的身影、操場上的學生、推著娃娃車穿越公園的家庭……這些「日常風景」在《微觀臺北》裡往往不是背景，而是拼湊角色動機與時間線的重要線索。',
+      info: '玩法提示：每個看似平凡的身影，都可能是下一張線索卡的提問對象。'
+    },
+    proposal: {
+      title: '索取商業提案書',
+      desc: '《微觀臺北：城市風波》完整商業授權提案書包含：市場分析、競品比較、商業價值評估、授權合作方式及聯絡資訊。',
+      info: '📧 請來信至 caseyhuang.studio@gmail.com 索取完整 PDF 提案書；或使用本頁底部「開啟 Email 撰寫」一鍵帶入範本。'
+    }
+  };
+
+  const SCENE_HINTS = {
+    mrt: '已開啟故事視窗。與下方地圖<strong>左上方</strong>「捷運」附近<strong>金色標記</strong>為同一則介紹，關閉後也可點標記重看。',
+    temple: '已開啟〈廟口失竊錄〉。地圖<strong>右上方廟宇區</strong>金色標記可對照圖中位置。',
+    nightmarket: '已開啟〈夜市驚魂錄〉。地圖<strong>右下方夜市攤區</strong>金色標記可對照。',
+    tower101: '已開啟「101 與天際線」介紹。請至下方地圖<strong>解鎖拖曳</strong>後，移至<strong>左下高塔／展覽館</strong>一帶放大細看。',
+    parkSchool: '已開啟「公園與校園」介紹。圖中<strong>滑梯、操場、校門與林蔭</strong>皆可放大搜尋人物與物件。'
+  };
+
+  function openModal(key) {
+    const data = modalData[key];
+    if (!data) return;
+    document.getElementById('modalContent').innerHTML = `
+      <div class="modal-title">${data.title}</div>
+      <p class="modal-desc">${data.desc}</p>
+      <div class="modal-info">${data.info}</div>
+    `;
+    document.getElementById('modalOverlay').classList.add('open');
+  }
+
+  document.querySelectorAll('.map-intro-scenes .scene-chip[data-modal]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      document.querySelectorAll('.map-intro-scenes .scene-chip').forEach(function (b) { b.classList.remove('is-active'); });
+      btn.classList.add('is-active');
+      var key = btn.getAttribute('data-modal');
+      openModal(key);
+      var hint = document.getElementById('sceneChipHint');
+      if (hint && SCENE_HINTS[key]) {
+        hint.classList.add('is-picked');
+        hint.innerHTML = SCENE_HINTS[key];
+      }
+    });
+  });
+
+  function closeModal(e) {
+    if (!e || e.target === document.getElementById('modalOverlay')) {
+      document.getElementById('modalOverlay').classList.remove('open');
+    }
+  }
+
+  // ── 互動地圖（主區全螢幕 cover + 可鎖拖曳；試玩區維持廟宇焦點） ──
+  function setupMapExplorer(root) {
+    if (!root) return;
+    const viewport = root.querySelector('.map-explorer-viewport');
+    const stage = root.querySelector('.map-explorer-stage');
+    const img = stage.querySelector('img');
+    let scale = 1, panX = 0, panY = 0;
+    const minS = 0.1, maxS = 5;
+    let ptr = null;
+
+    const panBtn = root.querySelector('[data-pan-toggle]');
+    root._panUnlocked = root.dataset.startPan !== 'locked';
+    if (root.dataset.startPan === 'locked' && ('ontouchstart' in window)) {
+      root._panUnlocked = true;
+    }
+    function syncPanUi() {
+      if (panBtn) {
+        panBtn.textContent = root._panUnlocked ? '🔓 拖曳中（點此鎖定）' : '🔒 解鎖拖曳';
+      }
+      viewport.classList.toggle('pan-locked', !root._panUnlocked);
+    }
+    if (panBtn) {
+      panBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        root._panUnlocked = !root._panUnlocked;
+        syncPanUi();
+      });
+    }
+    syncPanUi();
+
+    function syncHotspotScreenSize() {
+      var k = 1 / scale;
+      if (k > 3.2) k = 3.2;
+      if (k < 0.42) k = 0.42;
+      root.querySelectorAll('.map-explorer-hotspots .hotspot').forEach(function (el) {
+        el.style.transform = 'translate(-50%, -50%) scale(' + k + ')';
+      });
+    }
+    function apply() {
+      stage.style.transform = 'translate(' + panX + 'px,' + panY + 'px) scale(' + scale + ')';
+      syncHotspotScreenSize();
+    }
+    function fit() {
+      const w = img.naturalWidth, h = img.naturalHeight;
+      if (!w) return;
+      const vw = viewport.clientWidth, vh = viewport.clientHeight;
+      let s = Math.min(vw / w, vh / h) * 0.92;
+      s = Math.max(minS, Math.min(maxS, s));
+      scale = s;
+      panX = (vw - w * scale) / 2;
+      panY = (vh - h * scale) / 2;
+      apply();
+    }
+    function fitCover() {
+      const w = img.naturalWidth, h = img.naturalHeight;
+      if (!w) return;
+      const vw = viewport.clientWidth, vh = viewport.clientHeight;
+      let s = Math.max(vw / w, vh / h) * 1.04;
+      s = Math.max(minS, Math.min(maxS, s));
+      scale = s;
+      panX = (vw - w * scale) / 2;
+      panY = (vh - h * scale) / 2;
+      apply();
+    }
+    function focusTemple() {
+      const w = img.naturalWidth, h = img.naturalHeight;
+      if (!w) return;
+      const vw = viewport.clientWidth, vh = viewport.clientHeight;
+      scale = Math.max(minS, Math.min(maxS, (vh / h) * 1.42));
+      const fx = 0.78 * w, fy = 0.12 * h;
+      panX = vw / 2 - fx * scale;
+      panY = vh / 2 - fy * scale;
+      apply();
+    }
+
+    function doLayout() {
+      if (root.dataset.initial === 'temple') focusTemple();
+      else if (root.dataset.initial === 'cover') fitCover();
+      else fit();
+    }
+    img.addEventListener('load', doLayout);
+    if (img.complete && img.naturalWidth) doLayout();
+    window.addEventListener('resize', doLayout);
+
+    root.querySelectorAll('[data-zoom]').forEach(function (b) {
+      b.addEventListener('click', function (ev) {
+        ev.stopPropagation();
+        var act = b.getAttribute('data-zoom');
+        if (act === 'reset') {
+          doLayout();
+          return;
+        }
+        var rect = viewport.getBoundingClientRect();
+        var mx = rect.width / 2, my = rect.height / 2;
+        var worldX = (mx - panX) / scale, worldY = (my - panY) / scale;
+        var f = act === 'in' ? 1.12 : 1 / 1.12;
+        var ns = Math.max(minS, Math.min(maxS, scale * f));
+        panX = mx - worldX * ns;
+        panY = my - worldY * ns;
+        scale = ns;
+        apply();
+      });
+    });
+
+    viewport.addEventListener('pointerdown', function (e) {
+      if (e.target.closest('.map-explorer-tools')) return;
+      if (e.target.closest('.hotspot')) return;
+      if (root.dataset.startPan === 'locked' && !root._panUnlocked) return;
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      ptr = { id: e.pointerId, sx: e.clientX, sy: e.clientY, lx: e.clientX, ly: e.clientY, moved: false };
+      try { viewport.setPointerCapture(e.pointerId); } catch (x) {}
+      viewport.classList.add('is-dragging');
+    });
+    viewport.addEventListener('pointermove', function (e) {
+      if (!ptr || ptr.id !== e.pointerId) return;
+      if (Math.hypot(e.clientX - ptr.sx, e.clientY - ptr.sy) > 10) ptr.moved = true;
+      if (ptr.moved) {
+        panX += e.clientX - ptr.lx;
+        panY += e.clientY - ptr.ly;
+        ptr.lx = e.clientX;
+        ptr.ly = e.clientY;
+        apply();
+      }
+    });
+    function endPtr(e) {
+      if (!ptr || ptr.id !== e.pointerId) return;
+      if (ptr.moved) {
+        root._suppressHotspot = true;
+        setTimeout(function () { root._suppressHotspot = false; }, 380);
+      }
+      try { viewport.releasePointerCapture(e.pointerId); } catch (x) {}
+      viewport.classList.remove('is-dragging');
+      ptr = null;
+    }
+    viewport.addEventListener('pointerup', endPtr);
+    viewport.addEventListener('pointercancel', endPtr);
+
+    viewport.addEventListener('wheel', function (e) {
+      e.preventDefault();
+      var rect = viewport.getBoundingClientRect();
+      var mx = e.clientX - rect.left, my = e.clientY - rect.top;
+      var wx = (mx - panX) / scale, wy = (my - panY) / scale;
+      var d = e.deltaY > 0 ? 0.94 : 1.06;
+      var ns = Math.max(minS, Math.min(maxS, scale * d));
+      panX = mx - wx * ns;
+      panY = my - wy * ns;
+      scale = ns;
+      apply();
+    }, { passive: false });
+
+  }
+  setupMapExplorer(document.getElementById('mainMapExplorer'));
+  setupMapExplorer(document.getElementById('demoMapExplorer'));
+
+  // ── SMOOTH SCROLL ───────────────────────────────
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth' }); }
+    });
+  });
+</script>
+</body>
+</html>
